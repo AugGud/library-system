@@ -8,14 +8,12 @@ public class LibraryManager {
     private int nextId = 1;
 
     // add book
-    public Book addBook(String title, String author, int year, Genre genre) {
+    public Book addBook(int id, String title, String author, int year, Genre genre) {
         // field validation
         BookValidator.validateBook(title, author, year, genre);
 
         // business rules validation
-        if(!isUniqueBook(title, author)) {
-            throw new InvalidBookException("This author (" + author + ") has already released a book called: (" + title + ")");
-        }
+        validateUniqueBook(id, title, author);
 
         // add book
         Book book = new Book(nextId++, title, author, year, genre);
@@ -35,7 +33,12 @@ public class LibraryManager {
     }
 
     // update book
-    // might want to move the check to validation
+
+    //TODO:
+    // 1. Add validation.
+    // 2. Add partial updating
+    // 3. Add new validation, check if any books exist before trying to update
+    // 4. Business rule validation(uniqueness)
     public boolean updateBookById(int id, String title, String author, int year, Genre genre) {
         // get the book you want to update
         Book book = books.get(id);
@@ -77,14 +80,33 @@ public class LibraryManager {
 
         return results;
     }
-    //Title/Author combo must be unique (books with same title & author = duplicate)
-    private boolean isUniqueBook(String title, String author) {
-        for (Book current:books.values()) {
+
+    // Checks whether the (title, author) combination is unique.
+    // Used for both adding and updating books.
+    //
+    // selfId = ID of the book being updated, or 0/-1 if adding a new one.
+    // When updating, we skip the current book to avoid comparing it against itself.
+    private boolean isUniqueBook(int selfId, String title, String author) {
+        for (Book current : books.values()) {
+
+            // Skip the book itself during update checks
+            if (current.getId() == selfId) {
+                continue;
+            }
+
+            // Duplicate found
             if (current.getTitle().equalsIgnoreCase(title)
                     && current.getAuthor().equalsIgnoreCase(author)) {
                 return false;
             }
         }
         return true;
+    }
+
+
+    private void validateUniqueBook(int selfId, String title, String author) {
+        if(!isUniqueBook(selfId, title, author)) {
+            throw new InvalidBookException("This author (" + author + ") has already released a book called: (" + title + ")");
+        }
     }
 }
