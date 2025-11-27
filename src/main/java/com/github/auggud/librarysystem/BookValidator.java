@@ -5,23 +5,35 @@ import java.time.LocalDate;
 public class BookValidator {
 
     //Title not empty
-    public static boolean isTitleNotEmpty(String title) {
-        return title != null;
+    private static boolean isTitleNotEmpty(String title) {
+        return title != null && !title.isEmpty();
     }
     //Author not empty
-    public static boolean isAuthorNotEmpty(String author) {
-        return author != null;
+    private static boolean isAuthorNotEmpty(String author) {
+        return author != null && !author.isEmpty();
     }
     //Year > 0 and < currentYear
-    public static boolean isValidYear(int year) {
+    private static boolean isValidYear(int year) {
         return year > 0 && year <= LocalDate.now().getYear();
     }
     //Genre must exist
-    public static boolean isValidGenre(Genre genre) {
+    private static boolean isValidGenre(Genre genre) {
         return genre != null;
     }
-    //Title/Author combo must be unique (books with same title & author = duplicate)
-    public static boolean isValidBook(Book book) {
-        return book != null;
+
+    // general validator
+    public static void validateBook(String title, String author, int year, Genre genre) {
+        if(!isTitleNotEmpty(title)) {
+            throw new InvalidBookException("Title has to be non-empty");
+        }
+        if(!isAuthorNotEmpty(author)) {
+            throw new InvalidBookException("Author has to be non-empty");
+        }
+        if(!isValidYear(year)) {
+            throw new InvalidBookException("Year invalid");
+        }
+        if(!isValidGenre(genre)) {
+            throw new InvalidBookException("Invalid genre");
+        }
     }
 }

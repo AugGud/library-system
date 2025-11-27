@@ -9,7 +9,13 @@ public class LibraryManager {
 
     // add book
     public Book addBook(String title, String author, int year, Genre genre) {
-        // validation
+        // field validation
+        BookValidator.validateBook(title, author, year, genre);
+
+        // business rules validation
+        if(!isUniqueBook(title, author)) {
+            throw new InvalidBookException("This author (" + author + ") has already released a book called: (" + title + ")");
+        }
 
         // add book
         Book book = new Book(nextId++, title, author, year, genre);
@@ -34,7 +40,7 @@ public class LibraryManager {
         // get the book you want to update
         Book book = books.get(id);
 
-        // check if book exists, if not, then update unsuccessful
+        // if book doesn't exist, then update unsuccessful
         if(book == null) return false;
 
         // update the old book
@@ -70,5 +76,15 @@ public class LibraryManager {
         results.sort(Comparator.comparing(Book::getTitle));
 
         return results;
+    }
+    //Title/Author combo must be unique (books with same title & author = duplicate)
+    private boolean isUniqueBook(String title, String author) {
+        for (Book current:books.values()) {
+            if (current.getTitle().equalsIgnoreCase(title)
+                    && current.getAuthor().equalsIgnoreCase(author)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

@@ -8,7 +8,12 @@ public enum Genre {
     SCIFI,
     HISTORY;
 
+    // safe parsing method to turn String input into a enum genre
     public static Genre fromString(String input) {
-        return Genre.valueOf(input.trim().toUpperCase());
+        try{
+            return Genre.valueOf(input.trim().toUpperCase());
+        } catch(IllegalArgumentException e){
+            return null;
+        }
     }
 }
