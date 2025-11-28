@@ -32,28 +32,35 @@ public class LibraryManager {
         return new ArrayList<>(books.values());
     }
 
-    // update book
-
-    //TODO:
-    // 1. Add validation.
-    // 2. Add partial updating
-    // 3. Add new validation, check if any books exist before trying to update
-    // 4. Business rule validation(uniqueness)
-    public boolean updateBookById(int id, String title, String author, int year, Genre genre) {
+    // Updates a book's fields using partial updates.
+    public boolean updateBookById(int id, String title, String author, Integer year, Genre genre) {
         // get the book you want to update
-        Book book = books.get(id);
+        Book book = getBookById(id);
 
-        // if book doesn't exist, then update unsuccessful
+        // check if books exists before updating
         if(book == null) return false;
 
-        // update the old book
-        book.setTitle(title);
-        book.setAuthor(author);
-        book.setYear(year);
-        book.setGenre(genre);
+        // create temporary book object, so if it fails validation, nothing will be corrupted
+        Book tempBook = book.copy();
 
+        // update the temporary book
+        if(title != null && !title.isBlank()) tempBook.setTitle(title);
+        if(author != null && !author.isBlank()) tempBook.setAuthor(author);
+        if(year != null) tempBook.setYear(year);
+        if(genre != null) tempBook.setGenre(genre);
 
-        // successfully updated
+        // validate merged fields of book
+        BookValidator.validateBook(tempBook.getTitle(), tempBook.getAuthor(), tempBook.getYear(), tempBook.getGenre());
+
+        // validate merged fields in context of business logic rules
+        validateUniqueBook(id, tempBook.getTitle(), tempBook.getAuthor());
+
+        // after passing validation, we can safely update the old book
+        book.setTitle(tempBook.getTitle());
+        book.setAuthor(tempBook.getAuthor());
+        book.setYear(tempBook.getYear());
+        book.setGenre(tempBook.getGenre());
+
         return true;
     }
 

@@ -61,4 +61,7 @@ public class Book {
                 ", genre=" + genre +
                 '}';
     }
+    public Book copy() {
+        return new Book(id, title, author, year, genre);
+    }
 }
