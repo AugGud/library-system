@@ -6,11 +6,11 @@ public class BookValidator {
 
     //Title not empty
     private static boolean isTitleNotEmpty(String title) {
-        return title != null && !title.isEmpty();
+        return title != null && !title.isBlank();
     }
     //Author not empty
     private static boolean isAuthorNotEmpty(String author) {
-        return author != null && !author.isEmpty();
+        return author != null && !author.isBlank();
     }
     //Year > 0 and < currentYear
     private static boolean isValidYear(int year) {
