@@ -12,8 +12,8 @@ public class LibraryManager {
         // field validation
         BookValidator.validateBook(title, author, year, genre);
 
-        // business rules validation
-        validateUniqueBook(id, title, author);
+        // -1 means "new book, don't skip any existing item in uniqueness check"
+        validateUniqueBook(-1, title, author);
 
         // add book
         Book book = new Book(nextId++, title, author, year, genre);
@@ -114,6 +114,14 @@ public class LibraryManager {
     private void validateUniqueBook(int selfId, String title, String author) {
         if(!isUniqueBook(selfId, title, author)) {
             throw new InvalidBookException("This author (" + author + ") has already released a book called: (" + title + ")");
+        }
+    }
+    public void loadBooks(List<Book> books) {
+        for (Book book : books) {
+            this.books.put(book.getId(), book);
+            if(book.getId() > nextId) {
+                nextId = book.getId() + 1;
+            }
         }
     }
 }
